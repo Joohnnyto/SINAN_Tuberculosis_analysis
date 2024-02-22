@@ -1,0 +1,48 @@
+-- Code to identify the number of patients where ID_MN_RESI_AJ is different from ID_MUNIC_A
+
+SELECT count(ID_MUNIC_A) AS city_difference
+FROM New_tuberculosis_data
+WHERE ID_MUNIC_A <> ID_MN_RESI_AJ
+--RESULTS: 198.043 differences
+
+SELECT count(distinct CONCATENATE2) AS city_difference -- Trying to understand where unique patients are unique patients
+FROM New_tuberculosis_data
+WHERE ID_MUNIC_A <> ID_MN_RESI_AJ
+--Results: 196.446
+
+--ID_MUNIC_A --> current city of the notification <> from the current residency city
+
+SELECT count(distinct CONCATENATE2) AS city_difference
+FROM New_tuberculosis_data
+WHERE ID_MUNIC_2 <> ID_MN_RESI_AJ
+--Results: 235.005
+
+--CREATION OF A NEW COLUMN: CONCATENATE3
+
+SELECT count(distinct CONCATENATE3) AS city_difference
+FROM New_tuberculosis_data
+WHERE ID_MUNIC_2 <> ID_MN_RESI_AJ
+--Results: 178.613 -> reduction of number of patients with different cities
+
+SELECT count(distinct CONCATENATE3) AS city_difference
+FROM New_tuberculosis_data
+--RESULTS CONCATENATE3: 1832339 -> almost one patient per notification
+--RESULTS CONCATENATE2: 1887554 -> almost one patient per notification
+--RESULTS CONCATENATE1: 1000200
+
+--RESULTS WITH CONCATENATE3 PER SEX
+
+SELECT CS_SEXO,
+count(distinct CONCATENATE2)
+FROM New_tuberculosis_data
+WHERE CS_SEXO <> ""
+GROUP BY CS_SEXO
+--RESULTS: 619223 women; 1267982 men; 349 not informed
+
+--RESULTS WITH CONCATENATE3 PER RACE
+SELECT CS_RACA,
+count(distinct CONCATENATE2)
+FROM New_tuberculosis_data
+WHERE CS_RACA <> ""
+GROUP BY CS_RACA
+--RESULTS: 0 (NOT REPORTED): 21905; 1 (WHITE): 541659; 2 (BLACK):	229793; 3 (YELLOW):	16277; 4 (BROWN)	756601; 5 (INDIGENOUS):	18506; 9 (IGNORED)	111910 -- Can we exclude patients without race for the analysis? 
