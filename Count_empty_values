@@ -1,4 +1,4 @@
--- Count if the values of the dataset are empty; Dataset include only "" not NULL values
+   -- Count if the values of the dataset are empty; Dataset include only "" not NULL values
 
 SELECT
     SUM(CASE WHEN column = "" THEN 1 ELSE 0 END) AS count_nulls,
@@ -80,3 +80,33 @@ Results of Empty values per column: total rows = 1967254
 - SG_UF_2 = 441176
 - ID_MUNIC_2 = 226856
 - BACILOSC_1 = 840053
+- BACILOSC_2 = 590976
+- BACILOSC_3 = 916133
+- BACILOSC_4 = 684004
+- BACILOSC_5 = 987476
+- BACILOSC_6 = 794347
+- TRATSUP_AT = 737214
+- DT_MUDANCA = 1212813
+- NU_COMU_EX = 203430
+- SITUA_9_M = 949348
+- SITUA_12_M = 1817637
+- SITUA_ENCE = 86255
+- DT_ENCERRA = 91917
+- TPUNINOT = 1171574
+- POP_LIBER = 1122365
+- POP_RUA = 1124988
+- POP_SAUDE = 1125349
+- POP_IMIG = 1149906
+- BENEF_GOV = 1382468
+- AGRAVDROGA = 1116077
+- AGRAVTABAC = 1116587
+- TEST_MOLEC = 1230781
+- TEST_SENSI = 1487969
+- ANT_RETRO = 1790061
+- BAC_APOS_6 = 1674655
+- TRANSF = 1892285
+- UF_TRANSF = 1907559
+- MUN_TRANSF = 1916521
+- CONCATENATE1 = 0 -- created by study authors with concatenation of: - DT_DIAG || ANO_NASC || NU_IDADE_N || CS_SEXO
+- CONCATENATE2 = 0 -- created by study authors with concatenation of: - DT_DIAG || ANO_NASC || CS_SEXO || ID_MN_RESI_AJ
+- DURATION_TT = 0 -- created by study author
