@@ -1,0 +1,142 @@
+-- Code based on: https://www.crosstab.io/articles/sql-survival-curves/ and https://github.com/CrosstabKite/gists/blob/main/durations_to_survival.sql
+
+CREATE TABLE survival AS
+
+WITH num_subjects AS (
+    SELECT COUNT(CONCATENATE3) AS num_subjects FROM New_tuberculosis_data
+),
+
+-- duration already in days
+duration_rounded AS (
+SELECT 
+    CONCATENATE3,
+    TRATAMENTO,
+    DURATION_OF_TREATMENT,
+   (DURATION_OF_TREATMENT) AS duration_days
+FROM New_tuberculosis_data
+WHERE DURATION_OF_TREATMENT > 0
+),
+
+daily_tally AS (
+    SELECT
+        DURATION_OF_TREATMENT,
+        COUNT(TRATAMENTO) AS num_obs,
+        SUM(
+            CASE
+                WHEN TRATAMENTO <> "" THEN 1
+                ELSE 0
+            END
+        ) AS events
+    FROM duration_rounded
+    GROUP BY 1
+),
+
+cumulative_tally AS (
+    SELECT 
+        duration_days,
+        num_obs,
+        events,
+        num_subjects - COALESCE(SUM(num_obs) OVER (
+            ORDER BY duration_days ASC ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING), 0
+        ) AS at_risk
+    FROM daily_tally, num_subjects
+)
+
+SELECT
+    duration_days,
+    at_risk,
+    num_obs,
+    events,
+    at_risk - events - COALESCE(lead(at_risk, 1) OVER (ORDER BY duration_days ASC), 0) AS censored,
+
+    EXP(SUM(LN(1 - events / at_risk)) OVER (
+        ORDER BY duration_days ASC ROWS BETWEEN UNBOUNDED PRECEDING AND current ROW
+    )) AS survival_proba,
+
+    100 * (1 - EXP(SUM(LN(1 - events / at_risk)) OVER (
+        ORDER BY duration_days ASC ROWS BETWEEN UNBOUNDED PRECEDING AND current ROW
+    ))) AS conversion_pct,
+
+    SUM(events / at_risk) OVER (
+        ORDER BY duration_days ASC ROWS BETWEEN UNBOUNDED PRECEDING AND current ROW
+    ) AS cumulative_hazard
+
+FROM cumulative_tally
+WHERE events > 0;
+
+SELECT
+    duration_days,
+    at_risk,
+    num_obs,
+    events,
+    censored
+FROM survival
+ORDER BY duration_days ASC
+LIMIT 5;
+
+SELECT * FROM (
+    SELECT
+        duration_days,
+        TRUNC(survival_proba, 4) AS survival_proba,
+        TRUNC(conversion_pct, 4) AS conversion_pct,
+        TRUNC(cumulative_hazard, 4) AS cumulative_hazard
+    FROM survival
+    ORDER BY duration_days DESC
+    LIMIT 5
+) AS tail
+ORDER BY duration_days ASC;
+
+
+
+-- creating tables individualy
+
+--
+CREATE TABLE num_subjects AS
+    SELECT COUNT(CONCATENATE3) AS num_subjects 
+    FROM New_tuberculosis_data
+
+--
+CREATE TABLE duration_rounded AS
+SELECT
+    CONCATENATE3,
+    TRATAMENTO,
+    DURATION_OF_TREATMENT
+FROM New_tuberculosis_data
+WHERE DURATION_OF_TREATMENT > 0
+
+-- 
+CREATE TABLE daily_tally AS
+    SELECT
+        DURATION_OF_TREATMENT,
+        COUNT(TRATAMENTO) AS num_obs,
+        SUM(
+            CASE
+                WHEN TRATAMENTO = "6" THEN 1
+                ELSE 0
+            END
+        ) AS events
+    FROM duration_rounded
+    GROUP BY 1
+
+-- 
+SELECT
+    DURATION_OF_TREATMENT,
+    at_risk,
+    num_obs,
+    events,
+    at_risk - events - COALESCE(lead(at_risk, 1) OVER (ORDER BY DURATION_OF_TREATMENT ASC), 0) AS censored,
+
+    EXP(SUM(LN(1 - events / at_risk)) OVER (
+        ORDER BY DURATION_OF_TREATMENT ASC ROWS BETWEEN UNBOUNDED PRECEDING AND current ROW
+    )) AS survival_proba,
+
+    100 * (1 - EXP(SUM(LN(1 - events / at_risk)) OVER (
+        ORDER BY DURATION_OF_TREATMENT ASC ROWS BETWEEN UNBOUNDED PRECEDING AND current ROW
+    ))) AS conversion_pct,
+
+    SUM(events / at_risk) OVER (
+        ORDER BY DURATION_OF_TREATMENT ASC ROWS BETWEEN UNBOUNDED PRECEDING AND current ROW
+    ) AS cumulative_hazard
+
+FROM cumulative_tally
+WHERE events > 0;
