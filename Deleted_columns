@@ -21,9 +21,18 @@ WHERE DT_ENCERRA = ""
 DELETE FROM New_tuberculosis_data
 WHERE ANO_NASC = ""
 
-Remaining rows: 1,612,801
+-- exclude where NDUPLIC_N = "2" OR "9" -> AFFECTED ROWS: 7,728
+DELETE FROM New_tuberculosis_data
+WHERE NDUPLIC_N = "2"
+
+DELETE FROM New_tuberculosis_data
+WHERE NDUPLIC_N = "9"
+
+Remaining rows: 
 
 Excluded Columns with no use for the study or with largelly zero values:
+- TP_NOT = 0 --> only value = "2"
+- ID_AGRAVO = 0 -> all values with ICD 10 code for tuberculosis
 - DT_DIGITA = 370410 (18.831833%) 
 - DT_TRANSUS = 944620 (48.001172%)
 - DT_TRANSDM = 944992 (48.019206%)
@@ -40,4 +49,5 @@ Excluded Columns with no use for the study or with largelly zero values:
 - FLXRECEBI = 1862592 (94.631442%)
 - MIGRADO_W = 1438319 (73.108222%)
 - ID_OCUPA_N = 1597721 (81.208609%)
-- ID_AGRAVO = 0 -> all values with ICD 10 code for tuberculosis
+
+- INSTITUCIO = 1341854 (68.158309%)
