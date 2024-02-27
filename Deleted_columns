@@ -1,0 +1,43 @@
+-- Deleting zero values from database using the code delete
+-- https://www.sql-easy.com/learn/sqlite-delete/
+
+-- exclude where CS_RACA = "" -> AFFECTED ROWS: 234,404
+DELETE FROM New_tuberculosis_data
+WHERE CS_RACA = ""
+
+-- exclude where CS_RACA = "" -> AFFECTED ROWS: 68,063
+DELETE FROM New_tuberculosis_data
+WHERE SITUA_ENCE = ""
+
+-- exclude where DT_NOTIFIC = "" -> AFFECTED ROWS: 0
+DELETE FROM New_tuberculosis_data
+WHERE DT_NOTIFIC = ""
+
+-- exclude where DT_ENCERRA = "" -> AFFECTED ROWS: 28,183
+DELETE FROM New_tuberculosis_data
+WHERE DT_ENCERRA = ""
+
+-- exclude where ANO_NASC = "" -> AFFECTED ROWS: 19,803
+DELETE FROM New_tuberculosis_data
+WHERE ANO_NASC = ""
+
+Remaining rows: 1,612,801
+
+Excluded Columns with no use for the study or with largelly zero values:
+- DT_DIGITA = 370410 (18.831833%) 
+- DT_TRANSUS = 944620 (48.001172%)
+- DT_TRANSDM = 944992 (48.019206%)
+- DT_TRANSSM = 624379 (31.719801%)
+- DT_TRANSRM = 0
+- DT_TRANSRS = 912717 (46.391227%)
+- DT_TRANSSE = 1060299 (53.894206%)
+- UF_TRANSF = 1907559 (96.787529%)
+- MUN_TRANSF = 1916521 (97.298241%)
+- CONCATENATE1 = 0 -- created by study authors with concatenation of: - DT_DIAG || ANO_NASC || NU_IDADE_N || CS_SEXO
+- CONCATENATE2 = 0 -- created by study authors with concatenation of: - DT_DIAG || ANO_NASC || CS_SEXO || ID_MN_RESI_AJ
+- OUTRAS_DES = 1931024 (98.142189%)
+- CS_FLXRET = 1862592 (94.631442%)
+- FLXRECEBI = 1862592 (94.631442%)
+- MIGRADO_W = 1438319 (73.108222%)
+- ID_OCUPA_N = 1597721 (81.208609%)
+- ID_AGRAVO = 0 -> all values with ICD 10 code for tuberculosis
