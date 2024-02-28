@@ -28,7 +28,11 @@ WHERE NDUPLIC_N = "2"
 DELETE FROM New_tuberculosis_data
 WHERE NDUPLIC_N = "9"
 
-Remaining rows: 
+-- exclude where CS_SEXO = "I" -> AFFECTED ROWS: 140
+DELETE FROM New_tuberculosis_data
+WHERE CS_SEXO = "I"
+
+Remaining rows: 1,604,923
 
 Excluded Columns with no use for the study or with largelly zero values:
 - TP_NOT = 0 --> only value = "2"
